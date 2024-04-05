@@ -20,7 +20,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./useRUniverse.R
+      - name: Setup 
+        uses: eddelbuettel/github-actions/r-ci-setup@master
 
+      - name: Bootstrap
+        run: ./run.sh bootstrap
+        
+      - name: TLDBSM Setup
+        run: ./useRUniverse.R
+
+      - name: TLDBSM Versions
+        run: Rscript -e 'tiledbsoma::show_package_versions()'
 
