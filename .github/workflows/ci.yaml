@@ -5,6 +5,8 @@ name: ci
 on:
   push:
   pull_request:
+  # Also provide a UI triggerable entry point to use when artifacts changed
+  workflow_dispatch:
 
 jobs:
   ci:
@@ -17,18 +19,28 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      # Check out the repo via the standard action
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Set up some basic infrastructe as per the r-ci repo for
+      # portable CI: this wraps the download of run.sh in a convenient
+      # (if GitHub Actions-only) action which centralises code changes
       - name: Setup 
         uses: eddelbuettel/github-actions/r-ci-setup@master
 
+     # The standard bootstrap step sets up everything for either OS
+     # This includes r2u for Linux and standard binaries for macOS
       - name: Bootstrap
         run: ./run.sh bootstrap
-        
+
+     # This runs a short script (included here) to take advantage of the
+     # custom r-universe setup to provide both tiledbsoma and tiledb with
+     # consistent and standardised use of TileDB Core
       - name: TLDBSM Setup
         run: ./useRUniverse.R
 
+     # This shows success by accessing the custom version printer
       - name: TLDBSM Versions
         run: Rscript -e 'tiledbsoma::show_package_versions()'
 
